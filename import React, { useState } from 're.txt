@@ -1,0 +1,168 @@
+import React, { useState } from 'react';
+import { Upload, Video, MessageSquare, Zap, ChevronRight, Loader2, Play } from 'lucide-react';
+
+// --- CONFIGURATION ---
+// In a real app, move these to a .env file
+const DID_API_KEY = "YOUR_DID_API_KEY"; 
+
+export default function App() {
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [script, setScript] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [videoUrl, setVideoUrl] = useState(null);
+
+  const handleFileChange = (e) => {
+    const selected = e.target.files[0];
+    if (selected) {
+      setFile(selected);
+      setPreview(URL.createObjectURL(selected));
+    }
+  };
+
+  const generateVideo = async () => {
+    if (!file || !script) return alert("Please upload a photo and write a script!");
+    
+    setLoading(true);
+    // NOTE: For a real GitHub host, you'd usually call your own Backend here.
+    // This is a placeholder for the logic that triggers the AI Video API.
+    setTimeout(() => {
+      setLoading(false);
+      setVideoUrl("https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4"); 
+      alert("AI Video Generated! (Demo Mode)");
+    }, 5000);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#050505] text-gray-100 font-sans selection:bg-purple-500/30">
+      {/* Navigation */}
+      <nav className="flex justify-between items-center p-6 max-w-7xl mx-auto border-b border-white/5">
+        <div className="text-2xl font-bold tracking-tighter flex items-center gap-2">
+          <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
+            <Video size={18} className="text-white" />
+          </div>
+          Persona<span className="text-purple-600">AI</span>
+        </div>
+        <div className="hidden md:flex gap-6 text-sm font-medium text-gray-400">
+          <a href="#process" className="hover:text-white transition">Process</a>
+          <a href="#create" className="hover:text-white transition">Create</a>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="pt-20 pb-20 px-6 text-center">
+        <div className="inline-block px-4 py-1.5 mb-6 text-xs font-semibold tracking-widest text-purple-400 uppercase bg-purple-400/10 border border-purple-400/20 rounded-full">
+          New: AI Avatar v2.0
+        </div>
+        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 bg-gradient-to-b from-white to-gray-500 bg-clip-text text-transparent">
+          Bring Your Photos <br /> To Life.
+        </h1>
+        <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-10">
+          Upload one portrait. Write a script. Get a cinematic 8-second AI video of yourself speaking instantly.
+        </p>
+        <a href="#create" className="bg-purple-600 hover:bg-purple-500 px-8 py-4 rounded-xl font-bold text-lg inline-flex items-center gap-2 transition shadow-lg shadow-purple-500/20">
+          Get Started Free <ChevronRight size={20} />
+        </a>
+      </section>
+
+      {/* Step-by-Step Instructions */}
+      <section id="process" className="py-24 bg-[#0A0A0A] border-y border-white/5 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold mb-4">The Process</h2>
+            <p className="text-gray-500">Create content in under 60 seconds.</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            <StepCard number="01" icon={<Upload />} title="Upload Image" desc="Upload a clear, front-facing photo of yourself for the best lip-sync." />
+            <StepCard number="02" icon={<MessageSquare />} title="Type Script" desc="Tell the AI what to say. Keep it under 150 characters for an 8s video." />
+            <StepCard number="03" icon={<Zap />} title="Generate" desc="Our backend processes the animation and sends the video back." />
+          </div>
+        </div>
+      </section>
+
+      {/* Interactive App Section */}
+      <section id="create" className="py-24 px-6 max-w-5xl mx-auto">
+        <div className="bg-[#111] border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
+          <div className="grid md:grid-cols-2">
+            
+            {/* Input Form */}
+            <div className="p-8 md:p-12 border-b md:border-b-0 md:border-r border-white/10">
+              <h3 className="text-2xl font-bold mb-8">Studio</h3>
+              
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-2">1. Your Portrait</label>
+                  <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-white/10 rounded-2xl cursor-pointer hover:border-purple-500/50 hover:bg-purple-500/5 transition overflow-hidden">
+                    {preview ? (
+                      <img src={preview} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="text-center">
+                        <Upload size={24} className="mx-auto mb-2 text-gray-500" />
+                        <span className="text-sm text-gray-500">Click to upload</span>
+                      </div>
+                    )}
+                    <input type="file" className="hidden" onChange={handleFileChange} />
+                  </label>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-2">2. Your Script</label>
+                  <textarea 
+                    className="w-full bg-black border border-white/10 rounded-xl p-4 text-sm focus:border-purple-500 focus:ring-0 outline-none transition"
+                    placeholder="Hello everyone, this is my AI avatar speaking..."
+                    rows="4"
+                    value={script}
+                    onChange={(e) => setScript(e.target.value)}
+                  />
+                </div>
+
+                <button 
+                  onClick={generateVideo}
+                  disabled={loading}
+                  className="w-full bg-purple-600 hover:bg-purple-500 disabled:bg-gray-800 disabled:text-gray-500 py-4 rounded-xl font-bold transition flex items-center justify-center gap-2"
+                >
+                  {loading ? <><Loader2 className="animate-spin" /> Generating Video...</> : 'Generate AI Video'}
+                </button>
+              </div>
+            </div>
+
+            {/* Preview Area */}
+            <div className="bg-black p-8 md:p-12 flex flex-col items-center justify-center text-center">
+              <div className="w-full aspect-[9/16] bg-[#0A0A0A] border border-white/5 rounded-2xl flex items-center justify-center relative overflow-hidden group">
+                {videoUrl ? (
+                  <video src={videoUrl} controls className="w-full h-full object-cover" />
+                ) : (
+                  <div className="p-10">
+                    <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-600/20 transition">
+                      <Play size={24} className="text-gray-600 group-hover:text-purple-400" />
+                    </div>
+                    <p className="text-sm text-gray-500">Your video will appear here</p>
+                  </div>
+                )}
+              </div>
+              <p className="mt-4 text-[10px] uppercase tracking-widest text-gray-600">Standard 8s Output</p>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <footer className="py-12 text-center text-gray-600 text-xs border-t border-white/5">
+        PERSONA AI • 2026 • PRIVACY POLICY • POWERED BY VEO
+      </footer>
+    </div>
+  );
+}
+
+function StepCard({ number, icon, title, desc }) {
+  return (
+    <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-purple-500/30 transition group">
+      <div className="flex justify-between items-start mb-6">
+        <div className="p-3 bg-purple-600/10 text-purple-500 rounded-lg group-hover:scale-110 transition duration-500">{icon}</div>
+        <span className="text-4xl font-black opacity-5 italic group-hover:opacity-10 transition">{number}</span>
+      </div>
+      <h4 className="text-xl font-bold mb-3">{title}</h4>
+      <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+    </div>
+  );
+}
